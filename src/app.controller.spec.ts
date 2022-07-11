@@ -1,12 +1,18 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
+import { ConfigModule } from "@nestjs/config";
+import { Test, TestingModule } from "@nestjs/testing";
+import { AppController } from "./app.controller";
+import { AppService } from "./app.service";
+import configuration from "./config/configuration";
+import { Token } from "./token.dto";
 
-describe('AppController', () => {
+describe("AppController", () => {
   let appController: AppController;
 
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({
+      imports: [
+        ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+      ],
       controllers: [AppController],
       providers: [AppService],
     }).compile();
@@ -14,9 +20,9 @@ describe('AppController', () => {
     appController = app.get<AppController>(AppController);
   });
 
-  describe('root', () => {
-    it('should return "Hello World!"', () => {
-      expect(appController.getHello()).toBe('Hello World!');
+  describe("root", () => {
+    it('should return "tokens"', () => {
+      //expect(appController.upload()).toBeInstanceOf(Token);
     });
   });
 });

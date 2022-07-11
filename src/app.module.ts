@@ -8,10 +8,7 @@ import { LoggingInterceptor } from "./common/interceptor/logging.interceptor";
 import configuration from "./config/configuration";
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
-    EventEmitterModule.forRoot(),
-  ],
+  imports: [ConfigModule.forRoot({ isGlobal: true, load: [configuration] })],
   controllers: [AppController],
   providers: [
     AppService,
