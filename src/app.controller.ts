@@ -1,7 +1,16 @@
-import { Controller, Get, Logger, Post } from "@nestjs/common";
+import {
+  Controller,
+  Logger,
+  Post,
+  UploadedFiles,
+  UseInterceptors,
+} from "@nestjs/common";
+import { ApiBody, ApiConsumes } from "@nestjs/swagger";
 import { randomUUID } from "crypto";
 import { AppService } from "./app.service";
+import { ApiFile } from "./common/decorator/ApiFile.decorator";
 import keyGenerator from "./common/function/key-generator.function";
+import { FileSizeValidationPipe } from "./common/pipe/file-size-validation.pipe";
 import { Token } from "./token.dto";
 
 @Controller("files")
@@ -11,9 +20,12 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  upload(): Token {
+  @ApiFile()
+  upload(
+    @UploadedFiles(FileSizeValidationPipe) files: Array<Express.Multer.File>
+  ): Token {
+    console.log(files);
     const token: Token = keyGenerator({ id: randomUUID(), file: {} });
-    this.logger.verbose(token.privateToken.length);
     return token;
   }
 }
