@@ -1,6 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_INTERCEPTOR } from "@nestjs/core";
+import { MulterModule } from "@nestjs/platform-express";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { LoggingInterceptor } from "./common/interceptor/logging.interceptor";

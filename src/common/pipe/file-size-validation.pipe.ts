@@ -18,11 +18,9 @@ export class FileSizeValidationPipe implements PipeTransform {
     if (Array.isArray(files) && files.length === 0) {
       throw new BadRequestException("Validation failed (files expected)");
     }
-    console.log(files.length);
+    console.log("🚓", files);
 
     const newFilterFiles = files.filter((file) => file.size <= size);
-    console.log(newFilterFiles.length);
-
     return newFilterFiles;
   }
 }

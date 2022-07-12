@@ -8,7 +8,7 @@ import {
 import { ApiBody, ApiConsumes } from "@nestjs/swagger";
 import { randomUUID } from "crypto";
 import { AppService } from "./app.service";
-import { ApiFile } from "./common/decorator/ApiFile.decorator";
+import { ApiFileMulter } from "./common/decorator/api-file-multer.decorator";
 import keyGenerator from "./common/function/key-generator.function";
 import { FileSizeValidationPipe } from "./common/pipe/file-size-validation.pipe";
 import { Token } from "./token.dto";
@@ -20,7 +20,7 @@ export class AppController {
   constructor(private readonly appService: AppService) {}
 
   @Post()
-  @ApiFile()
+  @ApiFileMulter()
   upload(
     @UploadedFiles(FileSizeValidationPipe) files: Array<Express.Multer.File>
   ): Token {
