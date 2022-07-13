@@ -1,7 +1,10 @@
 import { createHmac, randomBytes } from "crypto";
-import { Token } from "src/token.dto";
+import { TokenDto } from "../dto/token.dto";
 
-export default function keyGenerator(info: { id: string; file: any }): Token {
+export default function keyGenerator(info: {
+  id: string;
+  file: any;
+}): TokenDto {
   let nonce = randomBytes(256);
   const privateToken = createHmac("sha384", process.env.PRIVATE_SECRET)
     .update(JSON.stringify({ ...info, nonce }))

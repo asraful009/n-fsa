@@ -2,7 +2,7 @@ import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { randomUUID } from "crypto";
 import configuration from "../../config/configuration";
-import { Token } from "../../token.dto";
+import { Token } from "../dto/token.dto";
 import keyGenerator from "./key-generator.function";
 
 describe("keyGenerator", () => {

@@ -3,7 +3,6 @@ import { Test, TestingModule } from "@nestjs/testing";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import configuration from "./config/configuration";
-import { Token } from "./token.dto";
 
 describe("AppController", () => {
   let appController: AppController;
