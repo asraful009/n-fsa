@@ -1,10 +1,9 @@
-import { applyDecorators, UseInterceptors } from "@nestjs/common";
+import { applyDecorators, SetMetadata, UseInterceptors } from "@nestjs/common";
 import { ApiBody, ApiConsumes } from "@nestjs/swagger";
 import { CustomFileMulter } from "../classes/custom-file-multer";
 
 export function ApiFileMulter() {
   return applyDecorators(
-    (req: Request) => {},
     UseInterceptors(
       CustomFileMulter.array(
         "files",

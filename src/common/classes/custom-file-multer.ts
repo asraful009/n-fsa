@@ -9,6 +9,8 @@ import { diskStorage, StorageEngine } from "multer";
 import * as fs from "fs";
 import { extname } from "path";
 import * as mime from "mime-types";
+import { randomUUID } from "crypto";
+import { FileInfoIF } from "../interface/file-info.interface";
 
 export class CustomFileMulter {
   static typeModule = MulterModule;
@@ -23,12 +25,12 @@ export class CustomFileMulter {
       file: Express.Multer.File,
       callback: Function
     ) => {
-      const temp: string = `${process.env.TEMP_FOLDER}` || "upload/temp";
+      const fileInfo: FileInfoIF = req["fileInfo"];
+      const temp: string =
+        `${process.env.TEMP_FOLDER || "upload/temp"}/` + fileInfo.tempLocation;
       if (!file) {
         callback(new Error("Uploading file failed"), null);
       }
-      console.log("🚗", file);
-
       if (!fs.existsSync(temp)) {
         try {
           fs.mkdirSync(temp, { recursive: true });
@@ -39,8 +41,9 @@ export class CustomFileMulter {
       callback(null, temp);
     },
     filename: (req: Request, file: Express.Multer.File, callback: Function) => {
-      console.log(`${Date.now()}${extname(file.originalname)}`);
-      callback(null, `${Date.now()}${extname(file.originalname)}`);
+      const fileName: string = `${randomUUID()}${extname(file.originalname)}`;
+      console.log(fileName);
+      callback(null, fileName);
     },
   });
 
@@ -57,6 +60,7 @@ export class CustomFileMulter {
     //   mime.lookup(file.originalname)
     // )}`;
     // return callback(null, false, new Error("goes wrong on the mimetype"));
+
     callback(null, file.originalname);
   }
 }
