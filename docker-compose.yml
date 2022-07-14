@@ -1,6 +1,11 @@
 services:
-  redis:
-    container_name: fsa-redis
-    image: redis:latest
+  mysql:
+    container_name: fsa-mysql
+    image: mysql:latest
+    environment:
+      - MYSQL_DATABASE=fsa
+      - MYSQL_USER=fsa
+      - MYSQL_PASSWORD=fsa
+      - MYSQL_ROOT_PASSWORD=fsa
     ports:
-      - 6379:6379
+      - 3306:3306

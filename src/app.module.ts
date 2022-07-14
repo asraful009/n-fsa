@@ -7,16 +7,31 @@ import {
 import { ConfigModule } from "@nestjs/config";
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
 import { MulterModule } from "@nestjs/platform-express";
+import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
 import { HttpExceptionFilter } from "./common/filter/http-exception.filter";
 import { LoggingInterceptor } from "./common/interceptor/logging.interceptor";
 import { TransformInterceptor } from "./common/interceptor/transform.interceptor";
 import { FileInfoMiddleware } from "./common/middleware/file-info.middleware";
-import configuration from "./config/configuration";
-
+import configuration from "./common/config/configuration";
+import { FileEntity } from "./common/entity/file.entity";
 @Module({
-  imports: [ConfigModule.forRoot({ isGlobal: true, load: [configuration] })],
+  imports: [
+    ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
+    TypeOrmModule.forRoot({
+      type: "mysql",
+      host: "localhost",
+      port: 3306,
+      username: "fsa",
+      password: "fsa",
+      database: "fsa",
+      entities: [FileEntity],
+      synchronize: true,
+      logging: true,
+    }),
+    TypeOrmModule.forFeature([FileEntity]),
+  ],
   controllers: [AppController],
   providers: [
     AppService,

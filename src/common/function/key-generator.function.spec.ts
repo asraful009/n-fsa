@@ -1,8 +1,8 @@
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { randomUUID } from "crypto";
-import configuration from "../../config/configuration";
-import { Token } from "../dto/token.dto";
+import configuration from "../config/configuration";
+import { TokenDto } from "../dto/token.dto";
 import keyGenerator from "./key-generator.function";
 
 describe("keyGenerator", () => {
@@ -16,7 +16,7 @@ describe("keyGenerator", () => {
 
   describe("unit test", () => {
     it('should return "tokens"', () => {
-      const token: Token = keyGenerator({ id: randomUUID(), file: {} });
+      const token: TokenDto = keyGenerator({ id: randomUUID(), file: {} });
       expect(token.privateToken).not.toBe(null);
       expect(token.privateToken).not.toBe(undefined);
       expect(token.privateToken).toMatch(/[0-9A-Fa-f]{90,120}/g);
