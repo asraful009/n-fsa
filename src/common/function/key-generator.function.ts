@@ -3,7 +3,7 @@ import { TokenDto } from "../dto/token.dto";
 
 export default function keyGenerator(info: {
   id: string;
-  file: any;
+  file: { [key: string]: string };
 }): TokenDto {
   let nonce = randomBytes(256);
   const privateToken = createHmac("sha384", process.env.PRIVATE_SECRET)

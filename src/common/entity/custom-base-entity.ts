@@ -3,12 +3,14 @@ import {
   BeforeSoftRemove,
   Column,
   Index,
+  PrimaryColumn,
   PrimaryGeneratedColumn,
   VersionColumn,
 } from "typeorm";
 
 export class CustomBaseEntity {
-  @PrimaryGeneratedColumn("uuid")
+  //@PrimaryGeneratedColumn("uuid")
+  @PrimaryColumn("uuid")
   id: string;
 
   @VersionColumn()
@@ -28,7 +30,9 @@ export class CustomBaseEntity {
 
   @BeforeInsert()
   setCreateDate() {
-    this.createdAt = new Date();
+    if (this.createdAt === undefined || this.createdAt === null) {
+      this.createdAt = new Date();
+    }
   }
 
   @BeforeSoftRemove()

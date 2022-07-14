@@ -21,12 +21,12 @@ export class AppController {
 
   @Post()
   @ApiFileMulter()
-  upload(
+  async upload(
     @UploadedFiles(FileSizeValidationPipe) files: Array<Express.Multer.File>,
     @FileInfo() fileInfo: FileInfoIF
-  ): TokenDto[] {
+  ): Promise<TokenDto[]> {
     // throw new BadRequestException("asdasdas");
-    const tokens: TokenDto[] = this.appService.save(files, fileInfo);
+    const tokens: TokenDto[] = await this.appService.save(files, fileInfo);
     return tokens;
   }
 }
