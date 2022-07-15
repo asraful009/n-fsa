@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
-import { MulterModule } from "@nestjs/platform-express";
+import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
 import { AppService } from "./app.service";
@@ -16,6 +16,7 @@ import { TransformInterceptor } from "./common/interceptor/transform.interceptor
 import { FileInfoMiddleware } from "./common/middleware/file-info.middleware";
 import configuration from "./common/config/configuration";
 import { FileEntity } from "./common/entity/file.entity";
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [configuration] }),
@@ -31,6 +32,7 @@ import { FileEntity } from "./common/entity/file.entity";
       logging: true,
     }),
     TypeOrmModule.forFeature([FileEntity]),
+    ScheduleModule.forRoot(),
   ],
   controllers: [AppController],
   providers: [

@@ -19,12 +19,9 @@ import { FileInfoIF } from "./common/interface/file-info.interface";
 import { FileSizeValidationPipe } from "./common/pipe/file-size-validation.pipe";
 import { FilePaginationParam } from "./common/param/file-paginate.param";
 import { FilePaginationParamPipe } from "./common/pipe/file-pagination.pipe";
-import { join } from "path";
 
 @Controller("files")
 export class AppController {
-  private readonly logger = new Logger(AppController.name);
-
   constructor(private readonly appService: AppService) {}
 
   @Post()

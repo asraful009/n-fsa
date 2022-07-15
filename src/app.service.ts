@@ -1,8 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-} from "@nestjs/common";
+import { ForbiddenException, Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import keyGenerator from "./common/function/key-generator.function";
 import { FileInfoIF } from "./common/interface/file-info.interface";
@@ -14,6 +10,7 @@ import { extname } from "path";
 import * as mime from "mime-types";
 import * as fs from "fs";
 import { FilePaginationParam } from "./common/param/file-paginate.param";
+import { Cron } from "@nestjs/schedule";
 
 @Injectable()
 export class AppService {
@@ -87,9 +84,11 @@ export class AppService {
       const fileEntity = await this.fileRepository
         .createQueryBuilder("fileEntitry")
         .andWhere("fileEntitry.privateToken = :privateToken", { privateToken })
-        .andWhere("fileEntitry.deletedAt is null")
         .getOne();
       await this.fileRepository.softDelete(fileEntity.id);
+      if (fs.existsSync(fileEntity.fileLocation)) {
+        fs.unlinkSync(fileEntity.fileLocation);
+      }
       return fileEntity;
     } catch (error) {
       //console.log(error);
@@ -109,9 +108,6 @@ export class AppService {
 
     const [fileEntities, count]: [FileEntity[], number] =
       await this.fileRepository.findAndCount({
-        where: {
-          deletedAt: null,
-        },
         skip,
         take,
       });
@@ -123,11 +119,30 @@ export class AppService {
       const fileEntity: FileEntity = await this.fileRepository
         .createQueryBuilder("fileEntitry")
         .andWhere("fileEntitry.publicToken = :publicToken", { publicToken })
-        .andWhere("fileEntitry.deletedAt is null")
         .getOne();
       return fileEntity;
     } catch (error) {
       throw new ForbiddenException(`public token is not available`);
     }
+  }
+
+  @Cron("*/12 * * * * *")
+  handleCron() {
+    let expireDate: Date = new Date();
+    expireDate.setMinutes(
+      expireDate.getMinutes() - (parseInt(process.env.FILE_EXPIRE_TIME) || 15)
+    );
+    this.fileRepository
+      .createQueryBuilder("fileEntitry")
+      .andWhere("fileEntitry.createdAt < :expireDate", {
+        expireDate,
+      })
+      .getMany()
+      .then((fileEntities) => {
+        for (const fileEntity of fileEntities) {
+          this.delete(fileEntity.privateToken);
+        }
+      })
+      .catch((err) => {});
   }
 }
