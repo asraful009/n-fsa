@@ -20,7 +20,7 @@ export class TransformInterceptor implements NestInterceptor {
           status,
           timestamp: new Date().toISOString(),
           errorMsg: null,
-          data,
+          payload: { pagination: data[0], data: data[1] },
         };
         return res;
       })

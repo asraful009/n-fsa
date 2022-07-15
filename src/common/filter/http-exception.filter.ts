@@ -20,7 +20,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       status,
       timestamp: new Date().toISOString(),
       errorMsg: message,
-      data: null,
+      payload: { pagination: null, data: null },
     };
     response.status(status).json(res);
   }

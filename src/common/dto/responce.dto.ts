@@ -1,6 +1,8 @@
+import { FilePaginationParam } from "../param/file-paginate.param";
+
 export interface ResponceIF {
   status: number;
   timestamp: string;
   errorMsg: string;
-  data: any;
+  payload: { pagination: FilePaginationParam; data: any };
 }

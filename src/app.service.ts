@@ -9,6 +9,7 @@ import { Repository } from "typeorm";
 import { extname } from "path";
 import * as mime from "mime-types";
 import * as fs from "fs";
+import { FilePaginationParam } from "./common/param/file-paginate.param";
 
 @Injectable()
 export class AppService {
@@ -67,5 +68,13 @@ export class AppService {
     }
     const tokens: TokenDto[] = [keyGenerator({ id: randomUUID(), file: {} })];
     return tokens;
+  }
+
+  async pagination(
+    filePaginationParam: FilePaginationParam
+  ): Promise<[FileEntity[], number]> {
+    const [fileEntities, count]: [FileEntity[], number] =
+      await this.fileRepository.findAndCount();
+    return [fileEntities, count];
   }
 }
