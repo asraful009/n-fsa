@@ -1,10 +1,9 @@
 import { ConfigModule } from "@nestjs/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { randomUUID } from "crypto";
-import configuration from "../config/configuration";
-import { TokenDto } from "../dto/token.dto";
-import keyGenerator from "./key-generator.function";
-
+import configuration from "../common/config/configuration";
+import { TokenDto } from "../common/dto/token.dto";
+import keyGenerator from "../common/function/key-generator.function";
 describe("keyGenerator", () => {
   beforeEach(async () => {
     const app: TestingModule = await Test.createTestingModule({

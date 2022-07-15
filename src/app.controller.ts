@@ -58,11 +58,11 @@ export class AppController {
     @Query(FilePaginationParamPipe)
     filePaginationParam: FilePaginationParam
   ): Promise<any> {
-    console.log(filePaginationParam);
+    // console.log(filePaginationParam);
     const [filesEntities, count] = await this.appService.pagination(
       filePaginationParam
     );
-    console.log(filesEntities);
+    // console.log(filesEntities);
     const retObj: any[] = [];
     for (const file of filesEntities) {
       const fileRet = {
