@@ -21,7 +21,6 @@ import { FilePaginationParam } from "./common/param/file-paginate.param";
 import { FilePaginationParamPipe } from "./common/pipe/file-pagination.pipe";
 import { Throttle, SkipThrottle } from "@nestjs/throttler";
 @Controller("files")
-@SkipThrottle()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -133,10 +132,6 @@ export class AppController {
   }
 
   @Put("asdasdasdas")
-  @Throttle(
-    parseInt(process.env.HIT_RATE, 10) || 7,
-    parseInt(process.env.TTL, 10) || 60
-  )
   async aa(): Promise<any> {
     const filePaginationParam: FilePaginationParam = new FilePaginationParam(
       1,
