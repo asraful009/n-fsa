@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from "@nestjs/common";
 import { randomUUID } from "crypto";
 import keyGenerator from "./common/function/key-generator.function";
 import { FileInfoIF } from "./common/interface/file-info.interface";
@@ -83,29 +87,47 @@ export class AppService {
       const fileEntity = await this.fileRepository
         .createQueryBuilder("fileEntitry")
         .andWhere("fileEntitry.privateToken = :privateToken", { privateToken })
+        .andWhere("fileEntitry.deletedAt is null")
         .getOne();
       await this.fileRepository.softDelete(fileEntity.id);
       return fileEntity;
     } catch (error) {
-      console.log(error);
-
-      throw new BadRequestException(`private token is not available`);
+      //console.log(error);
+      throw new ForbiddenException(`private token is not available`);
     }
   }
 
   async pagination(
     filePaginationParam: FilePaginationParam
   ): Promise<[FileEntity[], number]> {
+    let skip: number = undefined;
+    let take: number = undefined;
+    if (filePaginationParam.limit > -1) {
+      skip = (filePaginationParam.page - 1) * filePaginationParam.limit;
+      take = filePaginationParam.limit;
+    }
+
     const [fileEntities, count]: [FileEntity[], number] =
-      await this.fileRepository.findAndCount();
+      await this.fileRepository.findAndCount({
+        where: {
+          deletedAt: null,
+        },
+        skip,
+        take,
+      });
     return [fileEntities, count];
   }
 
   async getFileInfoByPublicToken(publicToken: string): Promise<FileEntity> {
-    const fileEntity: FileEntity = await this.fileRepository
-      .createQueryBuilder("fileEntitry")
-      .andWhere("fileEntitry.publicToken = :publicToken", { publicToken })
-      .getOne();
-    return fileEntity;
+    try {
+      const fileEntity: FileEntity = await this.fileRepository
+        .createQueryBuilder("fileEntitry")
+        .andWhere("fileEntitry.publicToken = :publicToken", { publicToken })
+        .andWhere("fileEntitry.deletedAt is null")
+        .getOne();
+      return fileEntity;
+    } catch (error) {
+      throw new ForbiddenException(`public token is not available`);
+    }
   }
 }

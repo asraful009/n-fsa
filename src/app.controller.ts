@@ -1,6 +1,7 @@
 import {
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   Logger,
   Param,
@@ -92,6 +93,9 @@ export class AppController {
       this.appService
         .getFileInfoByPublicToken(token)
         .then((fileEntity) => {
+          if (fileEntity == null) {
+            throw new ForbiddenException(`public token is not available`);
+          }
           const file = createReadStream(fileEntity.fileLocation);
           res.set({
             "Content-Type": fileEntity.fileMime,

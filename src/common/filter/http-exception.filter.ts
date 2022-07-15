@@ -16,7 +16,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
     const status = exception.getStatus();
     const message = exception.message;
-    console.log(exception.message);
+    // console.log(exception.message);
     const res: ResponceIF = {
       status,
       nonce: randomBytes(128).toString("hex"),
