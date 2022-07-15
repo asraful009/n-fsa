@@ -4,6 +4,7 @@ import {
   ExceptionFilter,
   HttpException,
 } from "@nestjs/common";
+import { randomBytes } from "crypto";
 import { Request, Response } from "express";
 import { ResponceIF } from "../dto/responce.dto";
 
@@ -18,6 +19,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     console.log(exception.message);
     const res: ResponceIF = {
       status,
+      nonce: randomBytes(128).toString("hex"),
       timestamp: new Date().toISOString(),
       errorMsg: message,
       payload: { pagination: null, data: null },

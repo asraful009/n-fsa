@@ -21,13 +21,12 @@ export class AppService {
   async save(
     files: Array<Express.Multer.File>,
     fileInfo: FileInfoIF
-  ): Promise<TokenDto[]> {
-    //console.log({ files, fileInfo });
+  ): Promise<[FileEntity[], number]> {
+    console.log({ files, fileInfo });
 
     const filesEntity: FileEntity[] = [];
     for (const file of files) {
       try {
-        console.log(file.path);
         const fileEntity: FileEntity = new FileEntity();
         fileEntity.id = randomUUID();
         fileEntity.fileName = file.originalname;
@@ -61,13 +60,23 @@ export class AppService {
         console.log("🚒", error);
       }
     }
+    let ret = [];
     try {
-      const v = await this.fileRepository.save(filesEntity);
+      ret = await this.fileRepository.save(filesEntity);
     } catch (error) {
       console.log("🏌", error);
     }
-    const tokens: TokenDto[] = [keyGenerator({ id: randomUUID(), file: {} })];
-    return tokens;
+    try {
+      fs.rmSync(`${process.env.TEMP_FOLDER}/${fileInfo.tempLocation}`, {
+        recursive: true,
+        force: true,
+      });
+    } catch (error) {
+      console.log("🎹", error);
+    }
+    console.log(ret);
+
+    return [ret, ret.length];
   }
 
   async pagination(

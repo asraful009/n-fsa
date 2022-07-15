@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Controller,
   Delete,
   Get,
@@ -8,17 +7,14 @@ import {
   Post,
   Query,
   UploadedFiles,
-  UseInterceptors,
 } from "@nestjs/common";
 import { AppService } from "./app.service";
 import { ApiFileMulter } from "./common/decorator/api-file-multer.decorator";
 import { FileInfo } from "./common/decorator/file-info.decorator";
 import { FileInfoIF } from "./common/interface/file-info.interface";
 import { FileSizeValidationPipe } from "./common/pipe/file-size-validation.pipe";
-import { TokenDto } from "./common/dto/token.dto";
 import { FilePaginationParam } from "./common/param/file-paginate.param";
 import { FilePaginationParamPipe } from "./common/pipe/file-pagination.pipe";
-import { FileEntity } from "./common/entity/file.entity";
 
 @Controller("files")
 export class AppController {
@@ -31,10 +27,30 @@ export class AppController {
   async upload(
     @UploadedFiles(FileSizeValidationPipe) files: Array<Express.Multer.File>,
     @FileInfo() fileInfo: FileInfoIF
-  ): Promise<TokenDto[]> {
-    // throw new BadRequestException("asdasdas");
-    const tokens: TokenDto[] = await this.appService.save(files, fileInfo);
-    return tokens;
+  ): Promise<any> {
+    const [filesEntities, count] = await this.appService.save(files, fileInfo);
+    const filePaginationParam: FilePaginationParam = new FilePaginationParam(
+      1,
+      0
+    );
+    filePaginationParam.count = count;
+    filePaginationParam.genTotalPage();
+    const retObj: any[] = [];
+    for (const file of filesEntities) {
+      const fileRet = {
+        id: file.id,
+        fileName: file.fileName,
+        fileE: file.fileExtension,
+        fileMime: file.fileMime,
+        privateToken: file.privateToken,
+        publicToken: file.publicToken,
+      };
+      retObj.push(fileRet);
+    }
+    filePaginationParam.count = count;
+    filePaginationParam.genTotalPage();
+    const data = [filePaginationParam, retObj];
+    return data;
   }
 
   @Get("list")

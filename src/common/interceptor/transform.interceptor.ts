@@ -4,6 +4,7 @@ import {
   Injectable,
   NestInterceptor,
 } from "@nestjs/common";
+import { randomBytes } from "crypto";
 import { map, Observable } from "rxjs";
 import { ResponceIF } from "../dto/responce.dto";
 
@@ -17,6 +18,7 @@ export class TransformInterceptor implements NestInterceptor {
       map((data) => {
         const status = context.switchToHttp().getResponse()["statusCode"];
         const res: ResponceIF = {
+          nonce: randomBytes(128).toString("hex"),
           status,
           timestamp: new Date().toISOString(),
           errorMsg: null,
