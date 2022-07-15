@@ -3,9 +3,9 @@ import {
   Delete,
   ForbiddenException,
   Get,
-  Logger,
   Param,
   Post,
+  Put,
   Query,
   Response,
   StreamableFile,
@@ -19,8 +19,9 @@ import { FileInfoIF } from "./common/interface/file-info.interface";
 import { FileSizeValidationPipe } from "./common/pipe/file-size-validation.pipe";
 import { FilePaginationParam } from "./common/param/file-paginate.param";
 import { FilePaginationParamPipe } from "./common/pipe/file-pagination.pipe";
-
+import { Throttle, SkipThrottle } from "@nestjs/throttler";
 @Controller("files")
+@SkipThrottle()
 export class AppController {
   constructor(private readonly appService: AppService) {}
 
@@ -128,6 +129,22 @@ export class AppController {
       retObj.push(fileRet);
     }
     const data = [filePaginationParam, retObj];
+    return data;
+  }
+
+  @Put("asdasdasdas")
+  @Throttle(
+    parseInt(process.env.HIT_RATE, 10) || 7,
+    parseInt(process.env.TTL, 10) || 60
+  )
+  async aa(): Promise<any> {
+    const filePaginationParam: FilePaginationParam = new FilePaginationParam(
+      1,
+      0
+    );
+    filePaginationParam.count = 1;
+    filePaginationParam.genTotalPage();
+    const data = [filePaginationParam, []];
     return data;
   }
 }

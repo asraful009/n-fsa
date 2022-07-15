@@ -5,7 +5,7 @@ import {
   RequestMethod,
 } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
-import { APP_FILTER, APP_INTERCEPTOR } from "@nestjs/core";
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from "@nestjs/core";
 import { ScheduleModule } from "@nestjs/schedule";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { AppController } from "./app.controller";
@@ -16,6 +16,7 @@ import { TransformInterceptor } from "./common/interceptor/transform.interceptor
 import { FileInfoMiddleware } from "./common/middleware/file-info.middleware";
 import configuration from "./common/config/configuration";
 import { FileEntity } from "./common/entity/file.entity";
+import { ThrottlerGuard, ThrottlerModule } from "@nestjs/throttler";
 
 @Module({
   imports: [
@@ -33,6 +34,10 @@ import { FileEntity } from "./common/entity/file.entity";
     }),
     TypeOrmModule.forFeature([FileEntity]),
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot({
+      ttl: parseInt(process.env.TTL, 10) || 60,
+      limit: parseInt(process.env.HIT_RATE, 10) || 7,
+    }),
   ],
   controllers: [AppController],
   providers: [
@@ -48,6 +53,10 @@ import { FileEntity } from "./common/entity/file.entity";
     {
       provide: APP_FILTER,
       useClass: HttpExceptionFilter,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: ThrottlerGuard,
     },
   ],
 })
