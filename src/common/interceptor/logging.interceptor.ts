@@ -4,7 +4,6 @@ import {
   Injectable,
   NestInterceptor,
 } from "@nestjs/common";
-import { EventEmitter2 } from "@nestjs/event-emitter";
 import { Observable, tap } from "rxjs";
 const chalk = require("chalk");
 
@@ -15,7 +14,6 @@ export class LoggingInterceptor implements NestInterceptor {
   private readonly address = chalk.hex("#EB4747");
   private readonly location = chalk.hex("#2E94B9");
   private readonly url = chalk.hex("#EC994B");
-  constructor(private readonly eventEmitter: EventEmitter2) {}
   intercept(context: ExecutionContext, next: CallHandler): Observable<any> {
     const className = context.getClass().name;
     const methodName = context.getHandler().name;
@@ -31,7 +29,7 @@ export class LoggingInterceptor implements NestInterceptor {
       .pipe(
         tap(() =>
           this.log(
-            this.address(remoteAddress + " ") +
+            this.address(remoteAddress + ` [${new Date().toUTCString()}] `) +
               this.location("[ " + className + "/" + methodName + " ] ") +
               this.url(method + " " + url) +
               " " +
