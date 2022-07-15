@@ -54,18 +54,18 @@ export class AppService {
           fs.mkdirSync(newLocation, { recursive: true });
         }
         fileEntity.fileLocation = `${newLocation}/${fileEntity.id}.${fileEntity.fileExtension}`;
-        console.log(fileEntity, file.path, fileEntity.fileLocation);
+        //console.log(fileEntity, file.path, fileEntity.fileLocation);
         fs.copyFileSync(file.path, fileEntity.fileLocation);
         filesEntity.push(fileEntity);
       } catch (error) {
-        console.log("🚒", error);
+        //console.log("🚒", error);
       }
     }
     let ret = [];
     try {
       ret = await this.fileRepository.save(filesEntity);
     } catch (error) {
-      console.log("🏌", error);
+      //console.log("🏌", error);
     }
     try {
       fs.rmSync(`${process.env.TEMP_FOLDER}/${fileInfo.tempLocation}`, {
@@ -73,7 +73,7 @@ export class AppService {
         force: true,
       });
     } catch (error) {
-      console.log("🎹", error);
+      //console.log("🎹", error);
     }
 
     return [ret, ret.length];
@@ -141,6 +141,29 @@ export class AppService {
       .then((fileEntities) => {
         for (const fileEntity of fileEntities) {
           this.delete(fileEntity.privateToken);
+        }
+      })
+      .catch((err) => {});
+
+    this.fileRepository
+      .createQueryBuilder("fileEntitry")
+      .getMany()
+      .then((fileEntities) => {
+        const dbFiles: string[] = fileEntities.map(
+          (fileEntity) => fileEntity.fileLocation
+        );
+
+        let filesPath: string[] = [];
+        if (fs.existsSync(process.env.FOLDER)) {
+          filesPath = fs
+            .readdirSync(process.env.FOLDER)
+            .map((fileStore) => `${process.env.FOLDER}/${fileStore}`);
+        }
+        let removeFiles = filesPath.filter((x) => !dbFiles.includes(x));
+        for (const removeFile of removeFiles) {
+          if (fs.existsSync(removeFile)) {
+            fs.unlinkSync(removeFile);
+          }
         }
       })
       .catch((err) => {});

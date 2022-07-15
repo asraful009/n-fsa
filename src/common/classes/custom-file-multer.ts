@@ -42,7 +42,7 @@ export class CustomFileMulter {
     },
     filename: (req: Request, file: Express.Multer.File, callback: Function) => {
       const fileName: string = `${randomUUID()}${extname(file.originalname)}`;
-      console.log(fileName);
+      //console.log(fileName);
       callback(null, fileName);
     },
   });

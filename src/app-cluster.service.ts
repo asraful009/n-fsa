@@ -9,16 +9,16 @@ export class AppClusterService {
     // console.log(cluster);
     if (cluster["isMaster"]) {
       const numCPUs = os.cpus().length;
-      console.log(`Master server started on ${process.pid}`);
+      //console.log(`Master server started on ${process.pid}`);
       for (let i = 0; i < numCPUs; i++) {
         cluster["fork"]();
       }
       cluster["on"]("exit", (worker, code, signal) => {
-        console.log(`Worker ${worker.process.pid} died.`);
+        //console.log(`Worker ${worker.process.pid} died.`);
         // cluster.fork();
       });
     } else {
-      console.log(`Cluster server Slave started on ${process.pid}`);
+      //console.log(`Cluster server Slave started on ${process.pid}`);
       callback();
     }
   }

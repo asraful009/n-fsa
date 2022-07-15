@@ -24,7 +24,10 @@ describe("App Testing", () => {
   describe("file api", () => {
     let onlineFiles: any[] = [];
     it("upload", async () => {
-      const filesPath = fs.readdirSync(process.env.TESTING_IMAGE_FOLDER);
+      let filesPath: string[] = [];
+      if (fs.existsSync(process.env.TESTING_IMAGE_FOLDER)) {
+        filesPath = fs.readdirSync(process.env.TESTING_IMAGE_FOLDER);
+      }
       const form = new FormData();
       // console.log(filesPath);
       for (const filePath of filesPath) {
