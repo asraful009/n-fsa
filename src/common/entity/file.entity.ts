@@ -2,7 +2,9 @@ import { Column, Entity, Index } from "typeorm";
 import { CustomBaseEntity } from "./custom-base-entity";
 
 @Entity("FileEntity")
-@Index(["createdAt", "isDeleted"])
+@Index(["privateToken", "deletedAt"])
+@Index(["publicToken", "deletedAt"])
+@Index(["createdAt", "deletedAt"])
 export class FileEntity extends CustomBaseEntity {
   @Column({ type: "varchar", length: 512, nullable: false })
   @Index()

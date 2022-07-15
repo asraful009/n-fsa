@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Injectable } from "@nestjs/common";
 import { randomUUID } from "crypto";
 import keyGenerator from "./common/function/key-generator.function";
 import { FileInfoIF } from "./common/interface/file-info.interface";
@@ -22,7 +22,7 @@ export class AppService {
     files: Array<Express.Multer.File>,
     fileInfo: FileInfoIF
   ): Promise<[FileEntity[], number]> {
-    console.log({ files, fileInfo });
+    //console.log({ files, fileInfo });
 
     const filesEntity: FileEntity[] = [];
     for (const file of files) {
@@ -74,9 +74,23 @@ export class AppService {
     } catch (error) {
       console.log("🎹", error);
     }
-    console.log(ret);
 
     return [ret, ret.length];
+  }
+
+  async delete(privateToken: string): Promise<FileEntity> {
+    try {
+      const fileEntity = await this.fileRepository
+        .createQueryBuilder("fileEntitry")
+        .andWhere("fileEntitry.privateToken = :privateToken", { privateToken })
+        .getOne();
+      await this.fileRepository.softDelete(fileEntity.id);
+      return fileEntity;
+    } catch (error) {
+      console.log(error);
+
+      throw new BadRequestException(`private token is not available`);
+    }
   }
 
   async pagination(
@@ -85,5 +99,13 @@ export class AppService {
     const [fileEntities, count]: [FileEntity[], number] =
       await this.fileRepository.findAndCount();
     return [fileEntities, count];
+  }
+
+  async getFileInfoByPublicToken(publicToken: string): Promise<FileEntity> {
+    const fileEntity: FileEntity = await this.fileRepository
+      .createQueryBuilder("fileEntitry")
+      .andWhere("fileEntitry.publicToken = :publicToken", { publicToken })
+      .getOne();
+    return fileEntity;
   }
 }

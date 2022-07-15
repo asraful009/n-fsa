@@ -10,10 +10,16 @@ import { ResponceIF } from "../dto/responce.dto";
 
 @Injectable()
 export class TransformInterceptor implements NestInterceptor {
+  private readonly excludeFileDownload = ["AppController/getFile"];
   intercept(
     context: ExecutionContext,
     next: CallHandler
   ): Observable<ResponceIF> {
+    const className = context.getClass().name;
+    const methodName = context.getHandler().name;
+    if (this.excludeFileDownload.indexOf(`${className}/${methodName}`) !== -1) {
+      return next.handle();
+    }
     return next.handle().pipe(
       map((data) => {
         const status = context.switchToHttp().getResponse()["statusCode"];
